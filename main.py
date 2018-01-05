@@ -5,7 +5,7 @@ import datetime, html
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://build-a-blog:zraMN4XtTaYOvjZB@localhost:8889/build-a-blog"
+app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://blogz:AARGPRDtmetOhvD0@localhost:8889/blogz"
 app.config['SQLALCHEMY_ECHO'] = True
 
 db = SQLAlchemy(app)
@@ -20,7 +20,6 @@ class Blog(db.Model):
         self.title = title
         self.body = body
         self.post_date = datetime.datetime.now()
-
 
 @app.route('/blog')
 def blog():
