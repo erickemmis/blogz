@@ -143,7 +143,7 @@ def newpost():
 
         title = request.form['title']
         body = request.form['body']
-        #TODO get current owner id
+        current_user = User.query.filter_by(username=session['username']).first()
 
         #check if both title and body are there
         if not title:
@@ -155,9 +155,8 @@ def newpost():
 
 
         if valid:
-            #add and commit title and body in a new post if valid
-            #TODO include owner id for th new_post
-            new_post = Blog(title, body)
+            #add and commit title and body in a new post if valid 
+            new_post = Blog(title, body, current_user)
             db.session.add(new_post)
             db.session.commit()
             return redirect('/blog?id={0}'.format(new_post.id))
