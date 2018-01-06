@@ -4,8 +4,9 @@
 
 <article>
     <h3>{{ post.title }}</h3>
-    <span>{{ post.post_date }}</span>
     <p>{{post.body}}</p>
+    <p>{{ post.post_date }}</p>
+    <p>Author: <a href="blog?user_id={{post.owner_id}}">{{post.owner.username}}</a></p>
 </article>
 
 {% endblock %}
