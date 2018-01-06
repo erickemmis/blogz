@@ -9,6 +9,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://blogz:AARGPRDtmetOhvD0@
 app.config['SQLALCHEMY_ECHO'] = True
 
 db = SQLAlchemy(app)
+app.secret_key = "dsfuf2344sdbuipafup13543"
+
 
 class Blog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -33,6 +35,34 @@ class User(db.Model):
         self.username = username
         self.password = password
 
+
+@app.route('/login', methods=["POST", "GET"])
+def login():
+    error = None
+    username = ''
+    if request.method == "POST":
+        username = request.form['username']
+        password = request.form['password']
+
+        #TODO error check name and password
+        #get user at username if exists else error
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            error = "username does not exist"
+            username=''
+        if user and not user.password == password:
+            error = "password is incorrect"
+            password=''
+        if not error:
+            return redirect('/newpost')
+
+        
+
+    return render_template("login.html", error=error, username=username)
+
+@app.route('/signup', methods=["POST", "GET"])
+def signup():
+    return render_template("signup.html")
 
 @app.route('/blog')
 def blog():
