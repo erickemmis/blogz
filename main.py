@@ -38,22 +38,28 @@ class User(db.Model):
 
 @app.route('/login', methods=["POST", "GET"])
 def login():
+
+    #declare variables for render_template
     error = None
     username = ''
+
     if request.method == "POST":
         username = request.form['username']
         password = request.form['password']
 
-        #TODO error check name and password
-        #get user at username if exists else error
+        #get user from username
         user = User.query.filter_by(username=username).first()
+
+        #error check username and password
         if not user:
             error = "username does not exist"
             username=''
         if user and not user.password == password:
             error = "password is incorrect"
             password=''
+        #if no errors proceed to newpost route
         if not error:
+            session['username'] = username
             return redirect('/newpost')
 
         
@@ -62,7 +68,51 @@ def login():
 
 @app.route('/signup', methods=["POST", "GET"])
 def signup():
-    return render_template("signup.html")
+    error = None
+    username = ''
+
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        verify = request.form['verify']
+
+        if not all((username,password,verify)):
+            error = "one or more fields are blank"
+        
+        existing_user = User.query.filter_by(username=username).first()
+        if existing_user:
+            error = "username already exists"
+
+        if all((username, password,verify)) and not password == verify:
+            error = "Password does not match verification"
+
+        if len(username) < 3 or len(password) < 3:
+            error = "both username and password must be atlest 3 characters"
+
+        if not error:
+            #create new user
+            new_user = User(username, password)
+            db.session.add(new_user)
+            db.session.commit()
+            #login user
+            session['username'] = username
+
+            return redirect('/newpost')
+
+
+
+    return render_template("signup.html", error=error, username=username)
+
+
+@app.route('/logout')
+def logout():
+    del session['username']
+    return redirect("/blog")
+
+@app.route("/")
+def index():
+    users = User.query.all()
+    return render_template("index.html", users=users)
 
 @app.route('/blog')
 def blog():

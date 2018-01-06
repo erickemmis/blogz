@@ -2,7 +2,7 @@
 
 {% block content %}
 <section>
-    <h1> Singup for account </h1>
+    <h1> Sign up for account </h1>
     <form method="post">
         <table>
             <tr>
@@ -17,6 +17,11 @@
                 <td><label for="verify">Verify Password: </label></td>
                 <td><input name="verify" type="password" /></td>
             </tr>
+            {% if error %}
+            <tr>
+            <td colspan='2'><span class='error'>{{error}}</span></td>
+            </tr>
+            {% endif%}
             <tr>
                 <td><input type="submit" value="Signup" /></td>
             </tr>
