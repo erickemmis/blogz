@@ -40,8 +40,10 @@ class User(db.Model):
 def require_login():
     #allowed access routes without signing in
     allowed_routes = ['login', 'signup', 'blog', 'index']
-    #redirect if not
-    if request.endpoint not in allowed_routes and 'username' not in session:
+    #redirect if not 
+    # #!!!-- had to include the static folder --!! 
+    # https://stackoverflow.com/questions/14759186/python-flask-before-request-exclude-static-directory
+    if request.endpoint not in allowed_routes and 'username' not in session and '/static/' not in request.path:
         return redirect('/login')
 
 @app.route("/")
