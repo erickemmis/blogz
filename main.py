@@ -1,40 +1,9 @@
 from flask import Flask, request, redirect, render_template, session, flash
-from flask_sqlalchemy import SQLAlchemy
 import datetime, html
 
-
-app = Flask(__name__)
-app.config['DEBUG'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://blogz:AARGPRDtmetOhvD0@localhost:8889/blogz"
-app.config['SQLALCHEMY_ECHO'] = True
-
-db = SQLAlchemy(app)
-app.secret_key = "dsfuf2344sdbuipafup13543"
-
-
-class Blog(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(80))
-    body = db.Column(db.String(280))
-    post_date = db.Column(db.DateTime)
-    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
-    def __init__(self, title, body, owner):
-        self.title = title
-        self.body = body
-        self.post_date = datetime.datetime.now()
-        self.owner = owner
-
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(120))
-    password = db.Column(db.String(120))
-    blogs = db.relationship('Blog', backref='owner')
-
-    def __init__(self, username, password):
-        self.username = username
-        self.password = password
-
+from model import Blog,User
+from hashutils import compare_hash
+from app import app,db
 
 @app.before_request
 def require_login():
@@ -69,7 +38,7 @@ def login():
         if not user:
             error = "username does not exist"
             username=''
-        if user and not user.password == password:
+        if user and not compare_hash(password, user.password):
             error = "password is incorrect"
             password=''
         #if no errors proceed to newpost route

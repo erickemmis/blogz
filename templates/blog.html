@@ -9,14 +9,12 @@
 <ul>
     {% for post in blog %}
         <li>
-            <article>
             <a href="/blog?post_id={{post.id}}">{{post.title}}</a>
             <p>
             {{post.body}}
             </p>
             <p>{{post.post_date}}</p>
             <p>Author: <a href="blog?user_id={{post.owner_id}}">{{post.owner.username}}</a></p>
-            </article>
         </li>
     {% endfor %}
 </ul>
