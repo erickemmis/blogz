@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Blog Posts</h1>
+<h1>{{owner.username}} Posts</h1>
 
 {% if blog.items|length == 0 %}
     <p> no posts yet </p>
@@ -9,12 +9,12 @@
 <ul>
       {% for post in blog.items %}
         <li>
-            <a href="/blog?post_id={{post.id}}">{{post.title}}</a>
+            <a href="/blog?post_id={{ post.id }}">{{post.title}}</a>
             <p>
             {{post.body}}
             </p>
             <p>{{post.post_date}}</p>
-            <p>Author: <a href="blog?user_id={{post.owner_id}}">{{post.owner.username}}</a></p>
+            <p>Author: <a href="blog?user_id={{ post.owner_id }}">{{post.owner.username}}</a></p>
         </li>
     {% endfor %}
 </ul>
@@ -22,13 +22,13 @@
 <ul class="pagination">
     {% if blog.has_prev %}
     <li>
-        <a href="{{url_for('blog',page=blog.prev_num)}}"><-</a>
+        <a href="{{ url_for('blog',page=blog.prev_num, user_id=owner.id) }}"><-</a>
     </li>
     {% endif %}
     {% for page in blog.iter_pages() %}
         {% if page %}
             {% if page != blog.page %}
-                <li><a href="{{ url_for('blog', page=page) }}">{{page}}</a></li>
+                <li><a href="{{ url_for('blog', page=page, user_id=owner.id) }}">{{page}}</a></li>
             {% else %}
                 <li>{{page}}</li>
                 {% endif %}
@@ -39,7 +39,7 @@
     {% if blog.has_next %}
 
     <li>
-        <a href="{{url_for('blog',page=blog.next_num)}}">-></a>
+        <a href="{{url_for('blog',page=blog.next_num, user_id=owner.id)}}">-></a>
     </li>
     {% endif %}
 </ul>

@@ -95,18 +95,26 @@ def logout():
 
 @app.route('/blog')
 def blog():
+    POSTS_PER_PAGE = 5
+    page = 1
 
-    if len(request.args) == 1:
+
+    if len(request.args) >= 1:
+        if 'page' in request.args:
+            page = int(request.args['page'])
+
         if 'post_id' in request.args:
             post_id = request.args.get('post_id')
             post = Blog.query.filter_by(id=post_id).first()
             return render_template('post.html', post=post)
+
         if 'user_id' in request.args:
             owner = User.query.filter_by(id=request.args['user_id']).first()
-            user_blog = Blog.query.filter_by(owner=owner).all()
-            return render_template('blog.html', blog=user_blog)
+            user_blog = Blog.query.filter_by(owner=owner).order_by(Blog.post_date.desc()).paginate(page,POSTS_PER_PAGE,False)
+            return render_template('user_blog.html', blog=user_blog, owner=owner)
 
-    blog = Blog.query.order_by(Blog.post_date.desc()).all()
+
+    blog = Blog.query.order_by(Blog.post_date.desc()).paginate(page,POSTS_PER_PAGE,False)
     return render_template('blog.html', blog=blog)
 
 @app.route('/newpost', methods=["POST","GET"])
@@ -135,7 +143,7 @@ def newpost():
             new_post = Blog(title, body, current_user)
             db.session.add(new_post)
             db.session.commit()
-            return redirect('/blog?id={0}'.format(new_post.id))
+            return redirect('/blog?post_id={0}'.format(new_post.id))
         else: 
             return render_template('newpost.html', 
                                            title_error=title_error,
